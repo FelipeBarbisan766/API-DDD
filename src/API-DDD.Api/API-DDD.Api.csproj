@@ -9,13 +9,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\API-DDD.Application\API-DDD.Application.csproj" />
+      <ProjectReference Include="..\API-DDD.Infrastructure\API-DDD.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
