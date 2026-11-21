@@ -1,0 +1,7 @@
+﻿services:
+  api-ddd:
+    image: api-ddd
+    build:
+      context: .
+      dockerfile: API-DDD/Dockerfile
+
