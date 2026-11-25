@@ -70,4 +70,10 @@ public class User : AggregateRoot, IAuditable, ISoftDeletable
         IsActive = false;
         AddDomainEvent(new UserDeactivatedEvent(Id));
     }
+    
+    public void EnsureCanLogin()
+    {
+        if (DeletedAt is not null || !IsActive)
+            throw new ForbiddenException("Account is disabled.");
+    }
 }
