@@ -1,25 +1,22 @@
+using API_DDD.Domain.Aggregates.Users;
 using API_DDD.Domain.SeedWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_DDD.Infrastructure.Persistence;
 
-public class AppDbContext
+public class AppDbContext : DbContext
 {
-    public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
-        var aggregates = ChangeTracker.Entries<AggregateRoot>()
-            .Select(e => e.Entity)
-            .Where(a => a.DomainEvents.Any())
-            .ToList();
+    }
 
-        var events = aggregates.SelectMany(a => a.DomainEvents).ToList();
+    public DbSet<User> Users => Set<User>();
 
-        var result = await base.SaveChangesAsync(ct);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        foreach (var e in events)
-            await _publisher.Publish(e, ct); // ex.: MediatR IPublisher
-
-        aggregates.ForEach(a => a.ClearDomainEvents());
-
-        return result;
+        base.OnModelCreating(modelBuilder);
     }
 }
