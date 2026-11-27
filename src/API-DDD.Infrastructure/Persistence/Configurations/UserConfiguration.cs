@@ -1,4 +1,3 @@
-using API_DDD.Domain.Aggregates;
 using API_DDD.Domain.Aggregates.Users;
 using API_DDD.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,8 @@ namespace API_DDD.Infrastructure.Persistence.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
+    public const string EmailUniqueIndexName = "IX_Users_Email";
+
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("Users");
@@ -20,12 +21,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(user => user.Email)
             .HasConversion(
-                email => email.Value,          
-                value => Email.Create(value))  
+                email => email.Value,
+                value => Email.Create(value))
             .HasColumnName("Email")
             .HasMaxLength(254)
             .IsRequired();
-        
+
         builder.Property(user => user.Password)
             .HasConversion(
                 password => password.Hash,
@@ -34,6 +35,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.HasIndex(user => user.Email).IsUnique();
+        builder.HasIndex(user => user.Email)
+            .IsUnique()
+            .HasDatabaseName(EmailUniqueIndexName);
     }
 }
