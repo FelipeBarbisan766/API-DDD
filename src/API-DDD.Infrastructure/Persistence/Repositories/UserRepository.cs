@@ -23,6 +23,15 @@ public sealed class UserRepository : IUserRepository
         return _context.Users.FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
     }
 
+    public Task<User?> GetByExternalLoginAsync(
+        ExternalLoginProvider provider, string providerUserId, CancellationToken cancellationToken)
+    {
+        return _context.Users.FirstOrDefaultAsync(
+            user => user.ExternalLogins.Any(login =>
+                login.Provider == provider && login.ProviderUserId == providerUserId),
+            cancellationToken);
+    }
+
     public Task<bool> ExistsByEmailAsync(Email email, CancellationToken cancellationToken)
     {
         return _context.Users.AnyAsync(user => user.Email == email, cancellationToken);
