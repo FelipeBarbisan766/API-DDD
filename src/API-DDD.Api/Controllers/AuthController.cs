@@ -9,11 +9,16 @@ namespace API_DDD.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly LoginHandler _loginHandler;
+    private readonly GoogleLoginHandler _googleLoginHandler;
     private readonly ICookieAuthService _cookieAuthService;
 
-    public AuthController(LoginHandler loginHandler, ICookieAuthService cookieAuthService)
+    public AuthController(
+        LoginHandler loginHandler,
+        GoogleLoginHandler googleLoginHandler,
+        ICookieAuthService cookieAuthService)
     {
         _loginHandler = loginHandler;
+        _googleLoginHandler = googleLoginHandler;
         _cookieAuthService = cookieAuthService;
     }
 
@@ -22,6 +27,16 @@ public sealed class AuthController : ControllerBase
     {
         var user = await _loginHandler.HandleAsync(
             new LoginCommand(request.Email, request.Password), cancellationToken);
+
+        await _cookieAuthService.SignInAsync(user);
+        return NoContent();
+    }
+
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleLogin(GoogleLoginRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _googleLoginHandler.HandleAsync(
+            new GoogleLoginCommand(request.IdToken), cancellationToken);
 
         await _cookieAuthService.SignInAsync(user);
         return NoContent();
@@ -36,3 +51,5 @@ public sealed class AuthController : ControllerBase
 }
 
 public sealed record LoginRequest(string Email, string Password);
+
+public sealed record GoogleLoginRequest(string IdToken);

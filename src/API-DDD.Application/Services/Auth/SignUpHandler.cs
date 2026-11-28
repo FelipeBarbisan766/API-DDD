@@ -31,7 +31,7 @@ public sealed class SignUpHandler
         await EnsureEmailIsAvailableAsync(email, cancellationToken);
 
         var password = Password.Create(command.Password, _passwordHasher);
-        var user = new User(command.Name, email, password);
+        var user = new User(command.Name, email, password, command.Surname);
 
         await _userRepository.AddAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

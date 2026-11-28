@@ -1,3 +1,3 @@
 namespace API_DDD.Application.Services.Auth;
 
-public sealed record SignUpCommand(string Name, string Email, string Password);
+public sealed record SignUpCommand(string Name, string Email, string Password, string? Surname = null);

@@ -21,8 +21,15 @@ builder.Services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
 
+builder.Services.AddOptions<GoogleAuthOptions>()
+    .Bind(builder.Configuration.GetSection(GoogleAuthOptions.SectionName))
+    .Validate(options => !string.IsNullOrWhiteSpace(options.ClientId), "Google ClientId is required.")
+    .ValidateOnStart();
+builder.Services.AddSingleton<IGoogleTokenValidator, GoogleTokenValidator>();
+
 builder.Services.AddScoped<LoginHandler>();
 builder.Services.AddScoped<SignUpHandler>();
+builder.Services.AddScoped<GoogleLoginHandler>();
 builder.Services.AddScoped<ICookieAuthService, CookieAuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
